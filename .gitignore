@@ -3,3 +3,5 @@
 .DS_store
 references
 data
+pretrain
+.vector_cache
