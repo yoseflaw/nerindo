@@ -32,12 +32,12 @@ if __name__ == "__main__":
         freeze=True
     )
     print(f"The model has {bilstm.count_parameters():,} trainable parameters.")
-    controller = Trainer(
+    trainer = Trainer(
         model=bilstm,
         data=corpus,
         optimizer_cls=Adam,
         loss_fn_cls=nn.CrossEntropyLoss
     )
-    controller.train(10)
+    trainer.train(20)
     sentence = "\"Menjatuhkan sanksi pemberhentian tetap kepada teradu Sophia Marlinda Djami selaku Ketua KPU Kabupaten Sumba Barat, sejak dibacakannya putusan ini\", ucap Alfitra dalam sidang putusan, Rabu (8/7/2020)."
-    words, infer_tags, unknown_tokens = controller.infer(sentence=sentence)
+    words, infer_tags, unknown_tokens = trainer.infer(sentence=sentence)

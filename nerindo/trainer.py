@@ -81,7 +81,7 @@ class Trainer(object):
         test_loss, test_acc = self.evaluate(self.data.test_iter)
         print(f"Test Loss: {test_loss:.3f} |  Test Acc: {test_acc * 100:.2f}%")
 
-    def infer(self, sentence):
+    def infer(self, sentence, true_tags=None):
         self.model.eval()
         # tokenize sentence
         nlp = Indonesian()
@@ -99,9 +99,16 @@ class Trainer(object):
         top_predictions = predictions.argmax(-1)
         predicted_tags = [self.data.tag_field.vocab.itos[t.item()] for t in top_predictions]
         # print inferred tags
-        max_len = max([len(token) for token in tokens])
-        print(f"{'word'.ljust(max_len)}\t{'unk'.ljust(max_len)}\ttag")
-        for token, tag in zip(tokens, predicted_tags):
+        max_len_token = max([len(token) for token in tokens] + [len('word')])
+        max_len_tag = max([len(tag) for tag in predicted_tags] + [len('pred')])
+        print(
+            f"{'word'.ljust(max_len_token)}\t{'unk'.ljust(max_len_token)}\t{'pred tag'.ljust(max_len_tag)}"
+            + ("\ttrue tag" if true_tags else "")
+        )
+        for i, token in enumerate(tokens):
             is_unk = "✓" if token in unks else ""
-            print(f"{token.ljust(max_len)}\t{is_unk.ljust(max_len)}\t{tag}")
+            print(
+                f"{token.ljust(max_len_token)}\t{is_unk.ljust(max_len_token)}\t{predicted_tags[i].ljust(max_len_tag)}"
+                + (f"\t{true_tags[i]}" if true_tags else "")
+            )
         return tokens, predicted_tags, unks

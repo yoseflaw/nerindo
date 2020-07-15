@@ -2,9 +2,8 @@ import gensim
 import torch
 from torchtext.data import Field, BucketIterator
 from torchtext.datasets import SequenceTaggingDataset
-from collections import Counter
-
 from torchtext.vocab import Vocab
+from collections import Counter
 
 
 class Corpus(object):
@@ -31,7 +30,7 @@ class Corpus(object):
             vectors = []
             for word, idx in self.word_field.vocab.stoi.items():
                 if word in self.wv_model.wv.vocab.keys():
-                    vectors.append(torch.as_tensor(self.wv_model[word].tolist()))
+                    vectors.append(torch.as_tensor(self.wv_model.wv[word].tolist()))
                 else:
                     vectors.append(torch.zeros(self.embedding_dim))
             self.word_field.vocab.set_vectors(
