@@ -79,11 +79,21 @@ class Embeddings(object):
             size=300,
             workers=3,
             window=5,
-            iter=5,
+            iter=10,
             sg=0,  # CBOW
             seed=1338
         )
-        if save_model: self.model.wv.save_word2vec_format(save_model)
+        if save_model: self.model.save(save_model)
+        return self.model
+
+    def finetune_w2v(self, sentences_file: str, save_model: str = None) -> Word2Vec:
+        with open(sentences_file, "r") as f:
+            lines = f.readlines()
+        sentences = []
+        for line in lines:
+            sentences.append([token for token in line.lower().split()])
+        self.model.train(sentences=sentences, total_examples=len(sentences), epochs=5)
+        if save_model: self.model.save(save_model)
         return self.model
 
     def load_w2v(self, model_file: str) -> Word2Vec:
@@ -107,7 +117,16 @@ def train_news_w2v():
     emb = Embeddings()
     emb.train_w2v(
         "../data/processed/news.txt",
-        save_model="../pretrain/embeddings/news.wv"
+        save_model="../pretrain/embeddings/news.bin"
+    )
+
+
+def finetune_news_w2v():
+    emb = Embeddings()
+    emb.load_w2v("../pretrain/embeddings/id.bin")
+    emb.finetune_w2v(
+        "../data/processed/news.txt",
+        save_model="../pretrain/embeddings/id_ft.bin"
     )
 
 

@@ -1,7 +1,6 @@
 import json
 import re
 import random
-from pprint import pprint
 from spacy.lang.id import Indonesian
 
 
