@@ -5,3 +5,4 @@ references
 data
 pretrain
 .vector_cache
+*.pt

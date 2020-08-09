@@ -1,6 +1,6 @@
 import gensim
 import torch
-from torchtext.data import Field, BucketIterator
+from torchtext.data import Field, NestedField, BucketIterator
 from torchtext.datasets import SequenceTaggingDataset
 from torchtext.vocab import Vocab
 from collections import Counter
@@ -10,15 +10,21 @@ class Corpus(object):
 
     def __init__(self, input_folder, min_word_freq, batch_size, wv_file=None):
         # list all the fields
-        self.word_field = Field(lower=True)
-        self.tag_field = Field(unk_token=None)
+        self.word_field = Field(lower=True)  # [sent len, batch_size]
+        self.tag_field = Field(unk_token=None)  # [sent len, batch_size]
+        # Character-level input
+        self.char_nesting_field = Field(tokenize=list)
+        self.char_field = NestedField(self.char_nesting_field)  # [batch_size, sent len, max len char]
         # create dataset using built-in parser from torchtext
         self.train_dataset, self.val_dataset, self.test_dataset = SequenceTaggingDataset.splits(
             path=input_folder,
             train="train.tsv",
             validation="val.tsv",
             test="test.tsv",
-            fields=(("word", self.word_field), ("tag", self.tag_field))
+            fields=(
+                (("word", "char"), (self.word_field, self.char_field)),
+                ("tag", self.tag_field)
+            )
         )
         # convert fields to vocabulary list
         if wv_file:
@@ -40,7 +46,8 @@ class Corpus(object):
             )
         else:
             self.word_field.build_vocab(self.train_dataset.word, min_freq=min_word_freq)
-        # build vocab for tag
+        # build vocab for tag and characters
+        self.char_field.build_vocab(self.train_dataset.char)
         self.tag_field.build_vocab(self.train_dataset.tag)
         # create iterator for batch input
         self.train_iter, self.val_iter, self.test_iter = BucketIterator.splits(
@@ -49,4 +56,5 @@ class Corpus(object):
         )
         # prepare padding index to be ignored during model training/evaluation
         self.word_pad_idx = self.word_field.vocab.stoi[self.word_field.pad_token]
+        self.char_pad_idx = self.char_field.vocab.stoi[self.char_field.pad_token]
         self.tag_pad_idx = self.tag_field.vocab.stoi[self.tag_field.pad_token]

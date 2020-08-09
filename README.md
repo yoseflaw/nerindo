@@ -1,9 +1,7 @@
 ## nerindo
 
-Pemodelan deteksi entitas otomatis untuk kalimat bahasa indonesia dengan pytorch.
+Named Entity Recognition for Indonesian NER with PyTorch.
 
-Sumber data untuk deteksi entitas:
+Corpus for NER:
 * https://github.com/yohanesgultom/nlp-experiments
 * https://github.com/yusufsyaifudin/indonesia-ner
-
-Model pytorch berdasarkan struktur dari: https://github.com/bentrevett/pytorch-seq2seq
