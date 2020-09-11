@@ -17,9 +17,12 @@ The Fine-tuned Indonesian word embeddings `id_ft.bin` is available [here](https:
 4. BiLSTM + Word Embeddings + Char Embeddings (CNN) + Attention Layer
 5. Transformer (simplified BERT) + Word Embeddings + Char Embeddings (CNN)
 
+### Learning rate finder
 Automatic learning rate finder based on [pytorch-lr-finder](https://github.com/davidtvs/pytorch-lr-finder).
 
-### Example output for learning rate finder
+Note: since the learning rates are determined automatically from the same range for all models, it may not be the best learning rate. To see the best learning rate, check the google colab version.
+
+Example output:
 
 <img src="https://github.com/yoseflaw/nerindo/blob/master/images/lr_finder.png" alt="LR Finder Example Output"/>
 
