@@ -5,6 +5,7 @@ from nerindo.models import NERModel
 from nerindo.lr_finder import LRFinder
 from nerindo.trainer import Trainer
 from pprint import pprint
+import os
 
 if __name__ == "__main__":
     use_device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -63,6 +64,7 @@ if __name__ == "__main__":
     max_epochs = 50
     histories = {}
     for model_name in configs:
+        checkpoint_path = f"saved_states/{model_name}.pt"
         print(f"Start Training: {model_name}")
         model = NERModel(**configs[model_name])
         trainer = Trainer(
@@ -70,12 +72,15 @@ if __name__ == "__main__":
             data=corpus,
             optimizer=Adam(model.parameters(), lr=suggested_lrs[model_name], weight_decay=1e-2),
             device=use_device,
-            checkpoint_path=f"saved_states/{model_name}.pt"
+            checkpoint_path=checkpoint_path
         )
         histories[model_name] = trainer.train(max_epochs=max_epochs, no_improvement=3)
         print(f"Done Training: {model_name}")
         print()
-        trainer.model.load_state(f"saved_states/{model_name}.pt")
+        if os.path.exists(checkpoint_path):
+            trainer.model.load_state(checkpoint_path)
+        else:
+            print("No checkpoint found. Use model's last state for inference.")
         sentence = "\"Menjatuhkan sanksi pemberhentian tetap kepada teradu Sophia Marlinda Djami selaku Ketua KPU Kabupaten Sumba Barat, sejak dibacakannya putusan ini\", ucap Alfitra dalam sidang putusan, Rabu (8/7/2020)."
         words, infer_tags, unknown_tokens = trainer.infer(sentence=sentence)
     print()

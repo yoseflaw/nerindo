@@ -134,7 +134,7 @@ class Trainer(object):
             val_loss, val_f1 = self.evaluate(self.data.val_iter)
             lr_scheduler.step(val_f1)
             # take the current model if it it at least 1% better than the previous best F1
-            if self.checkpoint_path and val_f1 > (best_val_f1 + 0.01 * best_val_f1):
+            if self.checkpoint_path and val_f1 > (best_val_f1 * 1.01):
                 print(f"Epoch-{epoch}: found better Val F1: {val_f1:.4f}, saving model...")
                 self.model.save_state(self.checkpoint_path)
                 best_val_f1 = val_f1
