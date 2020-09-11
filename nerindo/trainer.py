@@ -116,8 +116,9 @@ class Trainer(object):
         best_epoch = None
         lr_scheduler = ReduceLROnPlateau(
             optimizer=self.optimizer,
-            patience=2,
+            patience=3,
             factor=0.3,
+            mode="max",
             verbose=True
         )
         epoch = 1
@@ -131,7 +132,7 @@ class Trainer(object):
             history["train_loss"].append(train_loss)
             history["train_f1"].append(train_f1)
             val_loss, val_f1 = self.evaluate(self.data.val_iter)
-            lr_scheduler.step(val_loss)
+            lr_scheduler.step(val_f1)
             # take the current model if it it at least 1% better than the previous best F1
             if self.checkpoint_path and val_f1 > (best_val_f1 + 0.01 * best_val_f1):
                 print(f"Epoch-{epoch}: found better Val F1: {val_f1:.4f}, saving model...")

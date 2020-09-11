@@ -1,6 +1,5 @@
 
 import os
-from pprint import pprint
 from typing import List
 
 from spacy.lang.id import Indonesian
